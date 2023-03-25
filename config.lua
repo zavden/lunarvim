@@ -8,7 +8,7 @@ lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 
 lvim.keys.normal_mode["<M-m>"] = ":BufferLineMoveNext<CR>"
-lvim.keys.normal_mode["<M-n>"] = ":BufferLineMovePrev<CR>"
+lvim.keys.normal_mode["<M-b>"] = ":BufferLineMovePrev<CR>"
 lvim.builtin.indentlines.options.show_current_context = true
 
 lvim.builtin.telescope.defaults.layout_config = {
@@ -115,6 +115,8 @@ cmp.setup({
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-b>'] = cmp.mapping.complete(),
+    ['<M-space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
   }),
@@ -459,3 +461,10 @@ lvim.builtin.which_key.mappings["S"] = {
 }
 
 -- require("nvim-autopairs").setup {}
+
+vim.cmd[[
+  set guifont=Fira\ Code\:h19
+  let g:neovide_input_macos_alt_is_meta = v:true
+]]
+
+vim.g.neovide_input_macos_alt_is_meta = true

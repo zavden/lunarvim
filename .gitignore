@@ -1,4 +1,5 @@
 lsp-settings/
 plugin/
 snippets/
+*.BAK*
 *.BAK
