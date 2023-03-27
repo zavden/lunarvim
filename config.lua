@@ -9,6 +9,15 @@ lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 
 lvim.keys.normal_mode["<M-m>"] = ":BufferLineMoveNext<CR>"
 lvim.keys.normal_mode["<M-b>"] = ":BufferLineMovePrev<CR>"
+
+lvim.keys.normal_mode["<M-K>"] = ":resize -2<CR>"
+lvim.keys.normal_mode["<M-J>"] = ":resize +2<CR>"
+lvim.keys.normal_mode["<M-L>"] = ":vertical resize -2<CR>"
+lvim.keys.normal_mode["<M-H>"] = ":vertical resize +2<CR>"
+lvim.keys.normal_mode["<M-S>"] = ":SymbolsOutline<CR>"
+
+
+lvim.keys.insert_mode["<C-l>"] = "<C-o>$"
 lvim.builtin.indentlines.options.show_current_context = true
 
 lvim.builtin.telescope.defaults.layout_config = {
@@ -374,7 +383,23 @@ lvim.plugins = {
     },
     ft = { "fugitive" }
   },
-  { "rbong/vim-flog" }
+  { "rbong/vim-flog" },
+  {
+    "jayp0521/mason-nvim-dap.nvim",
+    -- event = "VeryLazy",
+    dependencies = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
+    -- enabled = vim.fn.has "win32" == 0,
+    init = function()
+      require "user.lua.config.mason_dap"
+    end,
+  },
+  {
+    "simrat39/symbols-outline.nvim",
+    config = function()
+      require('symbols-outline').setup()
+    end
+  },
+  {"nvim-telescope/telescope-symbols.nvim"}
 }
 
 -- vim.cmd(":GitBlameDisabled")
@@ -400,7 +425,7 @@ vim.cmd("filetype indent plugin on")
 
 vim.cmd[[
   inoremap <c-F> <cr><esc><<<<ko<bs>
-  inoremap <c-L> <cr><esc><<ko<bs><tab>
+  inoremap <c-K> <cr><esc><<ko<bs><tab>
 ]]
 
 
@@ -415,10 +440,10 @@ lvim.builtin.which_key.mappings["j"] = {
   w = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", "Search current word" },
 }
 
-lvim.builtin.which_key.mappings["r"] = {
-  name = "Ranger",
-  r = { ":RnvimrToggle<CR>", "Open ranger" },
-}
+-- lvim.builtin.which_key.mappings["r"] = {
+--   name = "Ranger",
+--   r = { ":RnvimrToggle<CR>", "Open ranger" },
+-- }
 lvim.builtin.which_key.mappings["t"] = {
   name = "Diagnostics",
   t = { "<cmd>TroubleToggle<cr>", "trouble" },
@@ -428,9 +453,9 @@ lvim.builtin.which_key.mappings["t"] = {
   l = { "<cmd>TroubleToggle loclist<cr>", "loclist" },
   r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
 }
-lvim.builtin.which_key.mappings["W"] = {
+lvim.builtin.which_key.mappings["R"] = {
   name = "Refresh",
-  W = { "<cmd>w<cr><cmd>e!<cr>", "Total refresh" },
+  R = { "<cmd>w<cr><cmd>e!<cr>", "Total refresh" },
 }
 lvim.builtin.which_key.mappings["Q"] = {
   name = "Pre exit",
@@ -460,6 +485,15 @@ lvim.builtin.which_key.mappings["S"] = {
   "<cmd>:HopLine<CR>", "Hop"
 }
 
+lvim.builtin.which_key.mappings["s"]["w"] = {
+  "<cmd>:Telescope grep_string<CR>", "Grep word"
+}
+
+lvim.builtin.which_key.mappings["s"]["s"] = {
+  "<cmd>:Telescope lsp_document_symbols<CR>", "Symbols"
+}
+
+
 -- require("nvim-autopairs").setup {}
 
 vim.cmd[[
@@ -468,3 +502,65 @@ vim.cmd[[
 ]]
 
 vim.g.neovide_input_macos_alt_is_meta = true
+
+
+-- lvim.builtin.dap.active = true
+
+-- lua require('dap-python').setup('~/PyEnvs/debugpy/bin/python')
+-- local dap = require('dap')
+-- dap.configurations.python = {
+--   {
+--     type = 'python';
+--     request = 'launch';
+--     name = "Launch file";
+--     program = "${file}";
+--     pythonPath = function()
+--       return '~/PyEnvs/debugpy/bin/python'
+--     end;
+--   },
+-- }
+
+lvim.builtin.dap.active = true
+-- local mason_path = vim.fn.glob(vim.fn.stdpath "data" .. "/mason/")
+-- pcall(function() require("dap-python").setup(mason_path .. "~/PyEnvs/debugpy/bin/python") end)
+
+-- -- Mappings
+-- lvim.builtin.which_key.mappings["dm"] = { "<cmd>lua require('dap-python').test_method()<cr>", "Test Method" }
+-- lvim.builtin.which_key.mappings["df"] = { "<cmd>lua require('dap-python').test_class()<cr>", "Test Class" }
+-- lvim.builtin.which_key.vmappings["d"] = {
+--   name = "Debug",
+--   s = { "<cmd>lua require('dap-python').debug_selection()<cr>", "Debug Selection" },
+-- }
+-- require("dap-python").setup("/home/alexander/PyEnvs/debugpy/bin/python")
+local dap = require('dap')
+dap.adapters.python = {
+  type = 'executable';
+  command = "/home/alexander/PyEnvs/debugpy/bin/python";
+  args = { '-m', 'debugpy.adapter' };
+}
+
+dap.configurations.python = {
+  {
+    -- The first three options are required by nvim-dap
+    type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
+    request = 'launch';
+    name = "Launch file";
+
+    -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+
+    program = "${file}"; -- This configuration will launch the current file if used.
+    pythonPath = function()
+      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+      local cwd = vim.fn.getcwd()
+      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+        return cwd .. '/venv/bin/python'
+      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+        return cwd .. '/.venv/bin/python'
+      else
+        return '/home/alexander/PyEnvs/debugpy/bin/python'
+      end
+    end;
+  },
+}
