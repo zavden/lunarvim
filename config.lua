@@ -28,6 +28,7 @@ lvim.builtin.terminal.execs = {
 lvim.keys.insert_mode["<C-l>"] = "<C-o>$"
 lvim.builtin.indentlines.options.show_current_context = true
 
+
 lvim.builtin.telescope.defaults.layout_config = {
   height = 0.9,
   width = 0.9,
@@ -54,6 +55,18 @@ lvim.builtin.telescope.defaults.layout_config = {
     flip_columns = 150,
   },
 }
+
+local actions = require "telescope.actions"
+
+lvim.builtin.telescope.defaults.mappings = {
+  i = {
+    ["<C-j>"] = actions.move_selection_next,
+    ["<C-k>"] = actions.move_selection_previous,
+  }
+}
+
+lvim.builtin.which_key.mappings["E"] = { "<cmd>NvimTreeToggle<CR>", "Close explorer" }
+
 
 for key, _ in pairs(lvim.builtin.telescope.pickers) do
   if key ~= "planets" then
@@ -107,10 +120,6 @@ local opts = {
 require("lvim.lsp.manager").setup("pyright", opts)
 local lspconfig = require("lspconfig")
 
-lspconfig.volar.setup{
-  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'}
-}
-
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   {
@@ -118,6 +127,11 @@ formatters.setup {
     extra_args = { "--print-with", "80" },
     filetypes = { "typescript", "typescriptreact", "javascript", "vue" },
   },
+  -- {
+  --   command = "flake8",
+  --   -- extra_args = { "--print-with", "80" },
+  --   filetypes = { "python" },
+  -- },
 }
 
 local cmp = require 'cmp'
@@ -199,36 +213,45 @@ require("tokyonight").setup({
     hl["@variable.builtin"] = { fg = c.red }
     hl.Include              = { fg = c.magenta, bold = true }
     hl.CursorLineNr         = { fg = c.blue, bold = true }
-    hl.rainbowcol3          = { fg = c.cyan }
-    hl.rainbowcol2          = { fg = c.purple }
     hl.rainbowcol1          = { fg = '#F4CA0D' }
+    hl.rainbowcol2          = { fg = c.purple }
+    hl.rainbowcol3          = { fg = c.cyan }
     hl.rainbowcol4          = { fg = '#F4CA0D' }
     hl.rainbowcol5          = { fg = c.purple }
     hl.rainbowcol6          = { fg = c.cyan }
     hl.rainbowcol7          = { fg = '#F4CA0D' }
-    hl.rainbowcol7 = { fg = c.purple }
+    -- hl.rainbowcol7 = { fg = c.purple }
     hl["@punctuation.bracket"] = { fg = c.magenta } -- For brackets and parens.
 
   end
 })
+
+
+-- ------------------------------------------
+-- ------------------------------------------
+-- ------------------------------------------
+
+
+
+
 -- Additional Plugins
 lvim.plugins = {
-  { "jose-elias-alvarez/typescript.nvim",
-    config = function()
-      local augroup = vim.api.nvim_create_augroup("TypescriptAutoImport", {})
-      require("typescript").setup({
-        server = {
-          on_attach = function(client, bufnr)
-            vim.api.nvim_create_autocmd("BufWritePre", {
-              group = augroup,
-              buffer = bufnr,
-              command = "TypescriptAddMissingImports",
-            })
-          end
-        },
-      })
-    end,
-  },
+  -- { "jose-elias-alvarez/typescript.nvim",
+  --   config = function()
+  --     local augroup = vim.api.nvim_create_augroup("TypescriptAutoImport", {})
+  --     require("typescript").setup({
+  --       server = {
+  --         on_attach = function(client, bufnr)
+  --           vim.api.nvim_create_autocmd("BufWritePre", {
+  --             group = augroup,
+  --             buffer = bufnr,
+  --             command = "TypescriptAddMissingImports",
+  --           })
+  --         end
+  --       },
+  --     })
+  --   end,
+  -- },
   -- { "morhetz/gruvbox"},
   -- { "sainnhe/gruvbox-material" },
   -- { "ellisonleao/gruvbox.nvim" },
@@ -288,7 +311,7 @@ lvim.plugins = {
       require('nvim-treesitter.configs').setup({
         rainbow = {
           enable = true,
-          disable = { "jsx", "vue", "html" },
+          disable = { "jsx", "vue", "html", "css", "scss", "sass" },
           extended_mode = true,
           max_file_lines = nil,
         },
@@ -407,7 +430,20 @@ lvim.plugins = {
       require('symbols-outline').setup()
     end
   },
-  {"nvim-telescope/telescope-symbols.nvim"}
+  {"nvim-telescope/telescope-symbols.nvim"},
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    lazy= false,
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+    },
+  }
 }
 
 -- vim.cmd(":GitBlameDisabled")
@@ -512,34 +548,8 @@ vim.cmd[[
 vim.g.neovide_input_macos_alt_is_meta = true
 
 
--- lvim.builtin.dap.active = true
-
--- lua require('dap-python').setup('~/PyEnvs/debugpy/bin/python')
--- local dap = require('dap')
--- dap.configurations.python = {
---   {
---     type = 'python';
---     request = 'launch';
---     name = "Launch file";
---     program = "${file}";
---     pythonPath = function()
---       return '~/PyEnvs/debugpy/bin/python'
---     end;
---   },
--- }
 
 lvim.builtin.dap.active = true
--- local mason_path = vim.fn.glob(vim.fn.stdpath "data" .. "/mason/")
--- pcall(function() require("dap-python").setup(mason_path .. "~/PyEnvs/debugpy/bin/python") end)
-
--- -- Mappings
--- lvim.builtin.which_key.mappings["dm"] = { "<cmd>lua require('dap-python').test_method()<cr>", "Test Method" }
--- lvim.builtin.which_key.mappings["df"] = { "<cmd>lua require('dap-python').test_class()<cr>", "Test Class" }
--- lvim.builtin.which_key.vmappings["d"] = {
---   name = "Debug",
---   s = { "<cmd>lua require('dap-python').debug_selection()<cr>", "Debug Selection" },
--- }
--- require("dap-python").setup("/home/alexander/PyEnvs/debugpy/bin/python")
 local dap = require('dap')
 
 local getPythonPath = function()
