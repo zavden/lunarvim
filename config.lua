@@ -17,6 +17,14 @@ lvim.keys.normal_mode["<M-H>"] = ":vertical resize +2<CR>"
 lvim.keys.normal_mode["<M-S>"] = ":SymbolsOutline<CR>"
 
 
+-- lvim.keys.normal_mode["<M-G>"] = ":ToggleTerm<CR>"
+lvim.builtin.terminal.execs = {
+      -- { vim.o.shell, "<M-C>", "Horizontal Terminal", "horizontal", 0.3 },
+      -- { vim.o.shell, "<M-A>", "Vertical Terminal", "vertical", 0.4 },
+      { vim.o.shell, "<M-F>", "Float Terminal", "float", nil },
+    }
+-- lvim.builtin.terminal.direction = "vertical"
+
 lvim.keys.insert_mode["<C-l>"] = "<C-o>$"
 lvim.builtin.indentlines.options.show_current_context = true
 
@@ -533,9 +541,26 @@ lvim.builtin.dap.active = true
 -- }
 -- require("dap-python").setup("/home/alexander/PyEnvs/debugpy/bin/python")
 local dap = require('dap')
+
+local getPythonPath = function()
+  -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+  -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+  -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+  local cwd = vim.fn.getcwd()
+  if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+    return cwd .. '/venv/bin/python'
+  elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+    return cwd .. '/.venv/bin/python'
+  elseif vim.fn.executable(cwd .. '/home/alexander/PyEnvs/debugpy/bin/python') == 1 then
+    return '/home/alexander/PyEnvs/debugpy/bin/python'
+  else
+    return '/Users/zavden/PyEnvs/debugpy/bin/python'
+  end
+end;
+
 dap.adapters.python = {
   type = 'executable';
-  command = "/home/alexander/PyEnvs/debugpy/bin/python";
+  command = getPythonPath();
   args = { '-m', 'debugpy.adapter' };
 }
 
@@ -558,9 +583,13 @@ dap.configurations.python = {
         return cwd .. '/venv/bin/python'
       elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
         return cwd .. '/.venv/bin/python'
-      else
+      elseif vim.fn.executable(cwd .. '/home/alexander/PyEnvs/debugpy/bin/python') == 1 then
         return '/home/alexander/PyEnvs/debugpy/bin/python'
+      else
+        return '/Users/zavden/PyEnvs/debugpy/bin/python'
       end
     end;
   },
 }
+
+vim.g.neovide_hide_mouse_when_typing = true
