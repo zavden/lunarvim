@@ -1,7 +1,10 @@
 lvim.log.level = "warn"
-lvim.colorscheme = "tokyonight"
+lvim.colorscheme = "gruvbox"
 lvim.background = "dark"
 lvim.builtin.treesitter.rainbow.enable = true
+
+-- lvim.builtin.treesitter.rainbow.
+
 lvim.leader = "space"
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
@@ -226,7 +229,20 @@ require("tokyonight").setup({
   end
 })
 
-
+require("gruvbox").setup({
+    contrast = "hard",
+    overrides = {
+        Constant = {link="GruvboxPurpleBold"},
+        StorageClass = {fg = "#98A254", bold=true},
+        Type = {link="GruvboxYellowBold"},
+        -- ["@constructor"] = {fg = "#98A254", bold=true},
+        Identifier = {link="GruvboxBlue"},
+        -- ["@tag.attribute"] = {fg="#98A254"},
+        ["@parameter"] = {link = "GruvboxYellow"},
+        ["@variable.builtin"] = {link="GruvboxRedBold"}
+        -- Conceal = {fg = "#98A254", bold=true},
+    }
+})
 -- ------------------------------------------
 -- ------------------------------------------
 -- ------------------------------------------
@@ -254,7 +270,7 @@ lvim.plugins = {
   -- },
   -- { "morhetz/gruvbox"},
   -- { "sainnhe/gruvbox-material" },
-  -- { "ellisonleao/gruvbox.nvim" },
+  { "ellisonleao/gruvbox.nvim" },
   {
     "aca/emmet-ls",
     config = function()
@@ -311,9 +327,27 @@ lvim.plugins = {
       require('nvim-treesitter.configs').setup({
         rainbow = {
           enable = true,
-          disable = { "jsx", "vue", "html", "css", "scss", "sass" },
+          disable = { "jsx", "vue", "html", "css", "scss", "javascriptreact", "typescriptreact", "tsx"},
           extended_mode = true,
           max_file_lines = nil,
+          levels = {
+              javascript = {
+                array = true,
+                call_expression = true,
+                class_body = true,
+                formal_parameters = true,
+                -- note: nvim-treesitter uses the javascript parser for jsx too
+                jsx_element = false,
+                jsx_expression = false,
+                jsx_self_closing_element = false,
+                new_expression = true,
+                object = true,
+                parenthesized_expression = true,
+                statement_block = true,
+                subscript_expression = true,
+                template_substitution = true,
+              },
+          }
         },
       })
     end
@@ -603,3 +637,4 @@ dap.configurations.python = {
 }
 
 vim.g.neovide_hide_mouse_when_typing = true
+
