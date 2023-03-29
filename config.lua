@@ -1,5 +1,12 @@
 lvim.log.level = "warn"
+
+-- if vim.o.filetype == "jsx" then
+--   lvim.colorscheme = "gruvbox"
+-- else
+-- end
+-- lvim.colorscheme = "tokyonight"
 lvim.colorscheme = "gruvbox"
+
 lvim.background = "dark"
 lvim.builtin.treesitter.rainbow.enable = true
 
@@ -230,6 +237,9 @@ require("tokyonight").setup({
 })
 
 require("gruvbox").setup({
+    palette_overrides = {
+      dark0_hard = "#161616",
+    },
     contrast = "hard",
     overrides = {
         Constant = {link="GruvboxPurpleBold"},
@@ -239,7 +249,16 @@ require("gruvbox").setup({
         Identifier = {link="GruvboxBlue"},
         -- ["@tag.attribute"] = {fg="#98A254"},
         ["@parameter"] = {link = "GruvboxYellow"},
-        ["@variable.builtin"] = {link="GruvboxRedBold"}
+        ["@variable.builtin"] = {link="GruvboxYellowBold"},
+        htmlArg = {link="GruvboxRed"},
+        Conditional = { link = "GruvboxRedBold" },
+        Statement = { link = "GruvboxRedBold" },
+        Repeat = { link = "GruvboxRedBold" },
+        Label = { link = "GruvboxRedBold" },
+        Keyword = { link = "GruvboxRedBold" },
+        Tag = { link = "GruvboxRedBold" },
+        Special = { link = "GruvboxOrangeBold" },
+        -- typescriptIdentifier = { link = "GruvboxOrange" },
         -- Conceal = {fg = "#98A254", bold=true},
     }
 })
@@ -327,27 +346,27 @@ lvim.plugins = {
       require('nvim-treesitter.configs').setup({
         rainbow = {
           enable = true,
-          disable = { "jsx", "vue", "html", "css", "scss", "javascriptreact", "typescriptreact", "tsx"},
+          disable = { "vue", "html", "css", "scss", "javascriptreact", "typescriptreact", "tsx", "jsx"},
           extended_mode = true,
           max_file_lines = nil,
-          levels = {
-              javascript = {
-                array = true,
-                call_expression = true,
-                class_body = true,
-                formal_parameters = true,
-                -- note: nvim-treesitter uses the javascript parser for jsx too
-                jsx_element = false,
-                jsx_expression = false,
-                jsx_self_closing_element = false,
-                new_expression = true,
-                object = true,
-                parenthesized_expression = true,
-                statement_block = true,
-                subscript_expression = true,
-                template_substitution = true,
-              },
-          }
+          -- levels = {
+          --     javascript = {
+          --       array = true,
+          --       call_expression = true,
+          --       class_body = true,
+          --       formal_parameters = true,
+          --       -- note: nvim-treesitter uses the javascript parser for jsx too
+          --       jsx_element = false,
+          --       jsx_expression = false,
+          --       jsx_self_closing_element = false,
+          --       new_expression = true,
+          --       object = true,
+          --       parenthesized_expression = true,
+          --       statement_block = true,
+          --       subscript_expression = true,
+          --       template_substitution = true,
+          --     },
+          -- }
         },
       })
     end
@@ -477,7 +496,24 @@ lvim.plugins = {
     opts = {
       -- configurations go here
     },
-  }
+  },
+  -- {
+  --   "SmiteshP/nvim-navbuddy",
+  --   requires = {
+  --       "neovim/nvim-lspconfig",
+  --       "SmiteshP/nvim-navic",
+  --       "MunifTanjim/nui.nvim"
+  --   },
+  --   config = function()
+  --     require("nvim-navbuddy").setup()
+  --     local navbuddy = require("nvim-navbuddy")
+  --     require("lspconfig").clangd.setup {
+  --         on_attach = function(client, bufnr)
+  --             navbuddy.attach(client, bufnr)
+  --         end
+  --     }
+  --   end
+  -- }
 }
 
 -- vim.cmd(":GitBlameDisabled")
@@ -638,3 +674,4 @@ dap.configurations.python = {
 
 vim.g.neovide_hide_mouse_when_typing = true
 
+-- vim.o.background = "#FFFFFF"
